@@ -1,0 +1,11 @@
+{
+  "content_scripts" : [{
+      "matches" : ["http://*/*", "https://*/*"],
+      "js" : ["global.js", "frame.js"]}],
+  "manifest_version" : 2,
+  "description" : "See what people are talking about on web pages.",
+  "name" : "Frame",
+  "permissions" : ["tabs", "http://*/*", "https://*/*",  "<all_urls>", "contextMenus"],
+  "version" : "0.1",
+  "web_accessible_resources": []
+}
