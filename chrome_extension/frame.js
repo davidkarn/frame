@@ -124,20 +124,21 @@ function frame_content() {
         return get_block(el.parentNode); }
 
     function popup_beside(el) {
-        var block = get_block(el);
-        var bounds = get_bounds(block);
-        var el_bounds = (el == block ? bounds : get_bounds(block));
-        var body_bounds = document.body.getBoundingClientRect();
-        var popup = document.createElement("div");
-        var popup_left = bounds.left + bounds.width + 15;
+        var block         = get_block(el);
+        var bounds        = get_bounds(block);
+        var el_bounds     = (el == block ? bounds : get_bounds(block));
+        var body_bounds   = document.body.getBoundingClientRect();
+        var popup         = document.createElement("div");
+        var popup_left    = bounds.left + bounds.width + 15;
 
-        popup.innerHTML = 'popup is a popup oh yes it is tra-la-la-la!';
-        popup.className = 'frame-popup'; 
-        set_styles(popup, {position: 'absolute',
-                           top: (el_bounds.top + 10) + 'px',
-                           left: popup_left + 'px',
-                           minWidth: '100px',
-                           maxWidth: Math.max(body_bounds.width - popup_left, 400) + 'px'});
+        popup.innerHTML   = 'popup is a popup oh yes it is tra-la-la-la!';
+        popup.className   = 'frame-popup'; 
+
+        set_styles(popup, {position:  'absolute',
+                           top:       (el_bounds.top + 10) + 'px',
+                           left:       popup_left + 'px',
+                           minWidth:  '100px',
+                           maxWidth:   Math.max(body_bounds.width - popup_left, 400) + 'px'});
 
         document.body.appendChild(popup); 
         return popup; }
