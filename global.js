@@ -1,10 +1,6 @@
 var global_authurl = "http://simplicitii.net/includes/auth.php";
 var global_authurl = "http://webdever.net/simplii/simplicitii/includes/auth.php";
 
-function param_caller(param) {
-    return function(o) {
-        return o[param](); }; }
-
 function remove_element(element) {
     if (element && element.parentNode)
         return element.parentNode.removeChild(element); }
@@ -36,18 +32,8 @@ function delay(that) {
     var args = to_array(arguments).slice(1);
 
     return function() {
-	var oldargs = args.slice(0);
-	var newargs = to_array(arguments);
-	var j = 0;
-	for (var i in oldargs)
-	    if (oldargs[i] == undefined) {
-		oldargs[i] = newargs[j];
-		j += 1; }
-
-	var as = oldargs.concat(newargs.slice(j));
-
-	return that.apply(that, as); };}
-var curry = delay;
+        var as = args.concat(to_array(arguments));
+        return that.apply(that, as); }};
 
 function to_array(what) {
     var i; 
@@ -58,12 +44,17 @@ function to_array(what) {
 
     return ar; }
 
+function get_domain() {
+    var uname = get_option('username').split('@');
+    return uname[1] || ''; }
+
 function send_message_to_tabs(message, query) {
     run_on_tabs(function(tab) {
         chrome.tabs.sendMessage(tab.id, message); },
                query); }
 
 function send_message_to_active_tab(message) {
+    console.log(['active_tab', message]);
     send_message_to_tabs(message, {active: true});
 
     var msg = clone(message);
@@ -71,6 +62,7 @@ function send_message_to_active_tab(message) {
     send_message_to_tabs(msg, {active: false}); }
 
 function run_on_tabs(fn, query) {
+    console.log(['run_on_tabs', query, (query || {})]);
     chrome.tabs.query(
         (query || {}), 
         function(tabs) {
@@ -81,6 +73,14 @@ function param_tester(key, value) {
     return function(obj) {
         return obj[key] == value; }; }
 
+function makeCallId() {
+    return ((new Date()) - 1).toString() + "@" + get_domain(); }
+
+function setCallId(callId) {
+    set_option('callid', callId); }
+
+function getCallId() {
+    get_option('callId'); }
 
 function clone(i) {
     if (i instanceof Array)
@@ -112,6 +112,8 @@ function http(method, url, data, success, fail) {
 
 function do_nothing() {}
 
+function callid_to_id(call_id) {
+    return call_id.replace(/(@|\.)/g, "_"); }
 
 function sel(sel, el) {
     return (el || document).querySelector(sel); }
@@ -143,7 +145,7 @@ function add_style(css) {
   if (!head) 
       head = document.body;
 
-  var style = document.createElement('style'); 
+  var style = doc.createElement('style'); 
   style.type = 'text/css';
   if (style.styleSheet) 
     style.styleSheet.cssText = css;
@@ -152,25 +154,5 @@ function add_style(css) {
 
   head.appendChild(style); }
 
-function get_offset(el, addto) {
-    var offset = {top: el.offsetTop,
-                  left: el.offsetLeft};
 
-    if (addto) {
-        offset.top += addto.top;
-        offset.left += addto.left; }
-
-    if (!el.offsetParent)
-        return offset;
-
-    return get_offset(el.offsetParent, offset); }
-
-function get_bounds(el) {
-    var offset = get_offset(el);
-    var bounds = el.getBoundingClientRect();
-    
-    offset.width = bounds.width;
-    offset.height = bounds.height; 
-
-    return offset; }
-    
+console.log(add_style);
