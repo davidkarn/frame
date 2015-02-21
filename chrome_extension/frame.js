@@ -34,9 +34,8 @@ function frame_content() {
         wait_for_mouseup(function() {
             var sel = get_selection();
             var node = get_selection_node(sel);
+            console.log(sel, create_highlight(sel)); }); }
             
-            console.log(sel); }); }
-
     function describe_node(node) {
         return {tag:         node.tagName || "#text",
                 id:          node.id,
@@ -45,7 +44,7 @@ function frame_content() {
 
     function store_attributes(node) {
         var attrs = {};
-        to_array(node.attributes).map(function(a) {
+        node.attributes && to_array(node.attributes).map(function(a) {
             if (!member(['class', 'id'], a.nodeName))
                 attrs[a.nodeName] = a.value; });
         return attrs; }
@@ -54,7 +53,7 @@ function frame_content() {
         chain = chain || [];
         if (node == document.body) return chain;
         return parent_chain(node.parentNode,
-                            chain.unshift(describe_node(node))); }
+                            [describe_node(node)].concat(chain)); }
 
     function store_node(node, offset, length) {
         return {text:    node.substringData(offset, length || -1),
