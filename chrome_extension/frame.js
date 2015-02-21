@@ -59,6 +59,7 @@ function frame_content() {
         return {text:    node.substringData(offset, length || -1),
                 offset:  offset,
                 length:  length,
+                css:     chain_to_selector(parent_chain(node)),
                 chain:   parent_chain(node)}; }
 
     function create_highlight(selection) {
@@ -67,6 +68,26 @@ function frame_content() {
         return {start:    store_node(start_node, selection.anchorOffset),
                 end:      store_node(end_node, 0, selection.extentOffset)}; }
         
+    function chain_to_selector(chain, including) {
+        including      = including || ["id", "class", "attributes"];
+        var node       = chain[0];
+        var selector   = node.tag;
+        if (selector == "#text") return "";
+
+        if (node.id && member(including, "id"))
+            selector += "#" + node.id;
+        if (node['class'] && member(including, "class"))
+            selector += (words(node['class'])
+                         .map(function(s) { return "." + s; })
+                         .join(''));
+        if (node.attributes && member(including, "attributes")) {
+            var attrs = node.attributes;
+            selector += (Object.keys(attrs)
+                         .map(function(key) {
+                             return '[' + key + '="' + attrs[key] + '"]'; })
+                         .join("")); }
+        var next = chain_to_selector(chain.slice(1), including); 
+        return selector + (next ? ' > ' + next: ''); }
 
     function wait_for_mouseup(next) {
         function handler() {

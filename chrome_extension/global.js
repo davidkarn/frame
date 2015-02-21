@@ -5,9 +5,16 @@ function param_caller(param) {
     return function(o) {
         return o[param](); }; }
 
+function returner(x) {
+    return x; }
+
 function remove_element(element) {
     if (element && element.parentNode)
         return element.parentNode.removeChild(element); }
+
+function words(string) {
+    return string.split(/\s+/)
+        .filter(returner); }
 
 function get_option(key) {
     if (key == 'authurl')
