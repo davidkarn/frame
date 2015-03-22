@@ -181,3 +181,5 @@ function get_bounds(el) {
 
     return offset; }
     
+function last(a) {
+    return a[a.length - 1]; }

@@ -2,6 +2,56 @@ function frame_content() {
     var waiting_for_mouseup = false;
     var comments = {};
 
+    function add_comment(id, highlight, comment) {
+        comments[id] = {id:         id,
+                        highlight:  highlight,
+                        comment:    comment}; }
+
+    function render_highlights() {
+        var nodes     = {};
+
+        for (var id in comments) {
+            var comment     = comments[id];
+            var highlight   = comment.highlight;
+            
+            match_highlight_to_nodes(id, highlight, nodes); }}
+
+    function match_highlight_to_nodes(id, highlight, nodes) {
+        var start      = lookup_node(highlight.start);
+        var end        = lookup_node(highlight.end);
+        var between    = nodes_between(start, end); }
+
+    function lookup_node(node_description) {
+        return sel(node_description.css); }
+
+    function nodes_between(start, end) {
+        var parent      = common_parent(start, end);
+        var nodes       = [];
+        var finished    = false;
+        var next_node   = start;
+        nodes.push(start); 
+
+        while (!finished) {
+            next_node    = find_next_node(start, end, common_parent);
+            nodes.push(next_node);
+            if (next_node == end)
+                finished = true; }
+
+        return nodes; }
+
+    function find_next_node(start, end, common_parent) {
+        while (is_last_node(start))
+            start   = start.parentNode;
+        return first_leaf(start.nextSibling); }
+
+    function first_leaf(node) {
+        while (node.childNodes[0])
+            node = node.childNodes[0];
+        return node; }
+
+    function is_last_node(node) {
+        return node.nextSibling === null; }
+
     function get_non_text_node(node) {
         if (node.nodeName != "#text")
             return node;
@@ -20,12 +70,6 @@ function frame_content() {
             if (node2) {
                 parents.push(node2);
                 node2 = node2.parentNode; }}}
-
-    function nodes_between(node1, node2) {
-        var parent   = common_parent(node1, node2);
-        var nodes    = [];
-        nodes.push(node1);
-        }
 
     function on_selection_change() {
         if (waiting_for_mouseup)
