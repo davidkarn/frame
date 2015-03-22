@@ -19,7 +19,30 @@ function frame_content() {
     function match_highlight_to_nodes(id, highlight, nodes) {
         var start      = lookup_node(highlight.start);
         var end        = lookup_node(highlight.end);
-        var between    = nodes_between(start, end); }
+        var between    = nodes_between(start, end); 
+        
+        for (var i in between) {
+            var node   = between[i];
+            register_highlight(nodes, node, highlight, id); } }
+
+    function register_highlight(nodes, node, highlight, id) {
+        var uuid    = uuid(node);
+        var entry   = nodes[uuid];
+
+        if (!entry) 
+            entry = nodes[uuid] = {node:         node,
+                                   highlights:   [],
+                                   uuid:         uuid};
+
+        entry.highlights.push({highlight: highlight, 
+                               id:        id}); }
+
+    function uuid(node) {
+        var id = node.getAttribute('data-frame-id');
+        if (!id) {
+            id = hash(new Date()) + '-' + hash(Math.random());
+            node.setAttribute('data-frame-id', id); }
+        return id; }
 
     function lookup_node(node_description) {
         return sel(node_description.css); }
